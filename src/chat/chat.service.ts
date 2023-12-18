@@ -12,7 +12,8 @@ import { VectorStore } from '@langchain/core/vectorstores';
 import { TextSplitter } from 'langchain/dist/text_splitter';
 import { StoreBase, StoreType } from './stores/storeBase';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import {pipeLogger} from "../utils";
+import { StringOutputParser } from 'langchain/schema/output_parser';
+import { pipeLogger } from '../utils';
 
 @Injectable()
 export class ChatService {
@@ -37,13 +38,20 @@ export class ChatService {
       (data) => ({ question: data.question }),
       this.templateService.getStandAloneQuestion(),
       this.llm,
-      (data) => data.content,
+      new StringOutputParser(),
     ]);
 
     const retrieverChain = RunnableSequence.from([
       (data) => data.standalone_question,
       this.vectorStore.asRetriever(),
       (docs) => docs.map((doc) => doc.pageContent).join('\n\n'),
+    ]);
+
+    const questionWithContextChain = RunnableSequence.from([
+      (data) => ({ context: data.context, question: data.question }),
+      this.templateService.getTemplateWithContext('FUN'),
+      this.llm,
+      new StringOutputParser(),
     ]);
 
     const chain = RunnableSequence.from([
@@ -55,14 +63,7 @@ export class ChatService {
         context: retrieverChain,
         question: ({ original_input }) => original_input.question,
       },
-      {
-        result: RunnableSequence.from([
-          (data) => ({ context: data.context, question: data.question }),
-          this.templateService.getTemplateWithContext('FUN'),
-          this.llm,
-          (data) => data.content,
-        ]),
-      },
+      questionWithContextChain,
     ]);
 
     return await chain.invoke({ question });
