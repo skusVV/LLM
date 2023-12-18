@@ -58,7 +58,7 @@ export class ChatService {
       {
         result: RunnableSequence.from([
           (data) => ({ context: data.context, question: data.question }),
-          this.templateService.getTemplateWithContext('RUDE'),
+          this.templateService.getTemplateWithContext('FUN'),
           this.llm,
           (data) => data.content,
         ]),
