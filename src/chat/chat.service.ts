@@ -6,11 +6,11 @@ import {
   RunnablePassthrough,
 } from 'langchain/schema/runnable';
 import { openAIApiKey } from '../env';
-import { TemplateService } from './services/template.service';
-import { LLM, LLMType } from './llm/llmBase';
+import { TemplateService } from '../common/services/template.service';
+import { LLM, LLMType } from '../common/llm/llmBase';
 import { VectorStore } from '@langchain/core/vectorstores';
 import { TextSplitter } from 'langchain/dist/text_splitter';
-import { StoreBase, StoreType } from './stores/storeBase';
+import { StoreBase, StoreType } from '../common/stores/storeBase';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { StringOutputParser } from 'langchain/schema/output_parser';
 import { pipeLogger } from '../utils';

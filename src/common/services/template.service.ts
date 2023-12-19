@@ -44,4 +44,12 @@ export class TemplateService {
       'Given a question, convert it to a standalone question. question: {question} standalone question:',
     );
   }
+
+  getTranslateTemplate() {
+    return PromptTemplate.fromTemplate(
+      `Given a text {text}, translate it to the language: {language}. 
+      I language is not provided, just return original text 
+      translated text:`,
+    );
+  }
 }
